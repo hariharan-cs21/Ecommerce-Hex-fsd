@@ -1,0 +1,40 @@
+{
+	"info": {
+		"_postman_id": "b3578d23-b8f7-4ed1-815f-a6a8e663a76c",
+		"name": "Ecommerce Case_Study",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33927483"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/api/category/add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"categoryName\":\"Clothing\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/category/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"category",
+						"add"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

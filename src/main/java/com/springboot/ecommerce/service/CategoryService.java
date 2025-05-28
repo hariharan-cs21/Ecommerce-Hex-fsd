@@ -1,0 +1,26 @@
+package com.springboot.ecommerce.service;
+
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.springboot.ecommerce.model.Category;
+import com.springboot.ecommerce.repo.CategoryRepository;
+
+@Service
+public class CategoryService {
+	
+	private CategoryRepository categoryRepository;
+	public CategoryService(CategoryRepository categoryRepository) {
+		this.categoryRepository = categoryRepository;
+	}
+	public Category addCategory(Category category) {
+		return categoryRepository.save(category);
+	}
+	public Category getCategory(int id) {
+	    return categoryRepository.findById(id)
+	        .orElseThrow(() -> new RuntimeException("Category not found"));
+	}
+
+
+}

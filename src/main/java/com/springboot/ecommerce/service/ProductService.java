@@ -1,9 +1,12 @@
 package com.springboot.ecommerce.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.ecommerce.dto.ProductDTO;
+import com.springboot.ecommerce.dto.SellerDTO;
 import com.springboot.ecommerce.model.Category;
 import com.springboot.ecommerce.model.Product;
 import com.springboot.ecommerce.model.Seller;
@@ -56,6 +59,21 @@ public class ProductService {
 	}
 
 
-
-
+	public List<ProductDTO> getProductsByCategoryId(int categoryId) {
+	    return productRepository.findByCategoryId(categoryId).stream()
+	            .map(product -> new ProductDTO(
+	                    product.getProductId(),
+	                    product.getBrandName(),
+	                    product.getProductname(),
+	                    product.getPrice(),
+	                    product.getStockQuantity(),
+	                    product.getImageUrl(),
+	                    product.getCategory(),
+	                    new SellerDTO(
+	                            product.getSeller().getId(),        
+	                            product.getSeller().getName()       
+	                    )
+	            ))
+	            .collect(Collectors.toList());
+	}
 }

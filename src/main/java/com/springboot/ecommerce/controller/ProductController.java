@@ -23,39 +23,36 @@ public class ProductController {
 
 	private ProductService productService;
 	private SellerService sellerService;
+
 	public ProductController(ProductService productService, SellerService sellerService) {
 		this.productService = productService;
 		this.sellerService = sellerService;
 	}
 
-
-
-	
 	@PostMapping("/add/{categoryId}")
-	//Seller id need to get after using spring security
-	
-	public Product add(@RequestBody Product product,@PathVariable int categoryId,Principal principal) {
+	// Seller id need to get after using spring security
+
+	public Product add(@RequestBody Product product, @PathVariable int categoryId, Principal principal) {
 		String username = principal.getName();
-	    Seller seller = sellerService.getSellerByUsername(username);
-	    int sellerID = seller.getId();
-		return productService.add(product,categoryId,sellerID);
+		Seller seller = sellerService.getSellerByUsername(username);
+		int sellerID = seller.getId();
+		return productService.add(product, categoryId, sellerID);
 	}
-	
+
 	@GetMapping("/getProductsBySellerId/{sellerID}")
 	public List<Product> getProductsBySellerId(@PathVariable int sellerID) {
-	    return productService.getProductsBySellerId(sellerID);
-	}
-	
-	@GetMapping("/get/category/{categoryId}")
-	public List<ProductDTO> getProductsByCategoryId(@PathVariable int categoryId) {
-	    return productService.getProductsByCategoryId(categoryId);
+		return productService.getProductsBySellerId(sellerID);
 	}
 
-	
-	
-	 @PutMapping("/update/{productId}")
-	    public Product update(@RequestBody Product product, 
-	                          @PathVariable int productId) {
-	        return productService.update(product, productId);
-	    }
+	@GetMapping("/get/category/{categoryId}")
+	public List<ProductDTO> getProductsByCategoryId(@PathVariable int categoryId) {
+		return productService.getProductsByCategoryId(categoryId);
+	}
+
+	@PutMapping("/update/{productId}")
+	public Product update(@RequestBody Product product, @PathVariable int productId, Principal principal) {
+		String username = principal.getName();
+	    Seller seller = sellerService.getSellerByUsername(username);
+		return productService.update(product, productId,seller.getId());
+	}
 }

@@ -17,15 +17,26 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 	@Autowired
 	private JwtFilter jwtFilter;
+	
+	/*
+	 * Executive, customer routes not done
+	 */
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.csrf((csrf) -> csrf.disable()) 
 			.authorizeHttpRequests(authorize -> authorize
 					.requestMatchers("/api/user/signup").permitAll()
+					//seller register
 					.requestMatchers("/api/seller/register").permitAll()
+				
 					.requestMatchers("/api/product/get/**").permitAll()
+					.requestMatchers("/api/user/details").authenticated()
+					.requestMatchers("/getProductsBySellerId/{sellerID}").authenticated()
+					
+					//product add,modify
 					.requestMatchers("/api/product/add","/api/product/update").hasAuthority("SELLER")
+					
 					.requestMatchers("/api/seller/get-one").hasAuthority("SELLER")
 					.requestMatchers("/api/category/add").hasAuthority("EXECUTIVE")
 					.requestMatchers("/api/category/**").permitAll()

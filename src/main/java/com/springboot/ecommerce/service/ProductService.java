@@ -1,7 +1,7 @@
 package com.springboot.ecommerce.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -39,9 +39,12 @@ public class ProductService {
 	}
 
 
-	public Product update(Product updatedProduct, int productId) {
+	public Product update(Product updatedProduct, int productId,int sellerId) {
 	    Product existingProduct = productRepository.findById(productId)
 	        .orElseThrow(() -> new RuntimeException("Product not found"));
+	    if (existingProduct.getSeller().getId() != sellerId) {
+	        throw new RuntimeException("You do not have permission to modify this product");
+	    }
 
 	    existingProduct.setBrandName(updatedProduct.getBrandName());
 	    existingProduct.setProductname(updatedProduct.getProductname());
@@ -60,20 +63,28 @@ public class ProductService {
 
 
 	public List<ProductDTO> getProductsByCategoryId(int categoryId) {
-	    return productRepository.findByCategoryId(categoryId).stream()
-	            .map(product -> new ProductDTO(
-	                    product.getProductId(),
-	                    product.getBrandName(),
-	                    product.getProductname(),
-	                    product.getPrice(),
-	                    product.getStockQuantity(),
-	                    product.getImageUrl(),
-	                    product.getCategory(),
-	                    new SellerDTO(
-	                            product.getSeller().getId(),        
-	                            product.getSeller().getName()       
-	                    )
-	            ))
-	            .collect(Collectors.toList());
+		 List<Product> products = productRepository.findByCategoryId(categoryId);
+		    List<ProductDTO> productDTOs = new ArrayList<>();
+		    for (Product product : products) {
+		        SellerDTO sellerDTO = new SellerDTO(
+		            product.getSeller().getId(),
+		            product.getSeller().getName()
+		        );
+
+		        ProductDTO productDTO = new ProductDTO(
+		            product.getProductId(),
+		            product.getBrandName(),
+		            product.getProductname(),
+		            product.getPrice(),
+		            product.getStockQuantity(),
+		            product.getImageUrl(),
+		            product.getCategory(),
+		            sellerDTO
+		        );
+
+		        productDTOs.add(productDTO);
+		    }
+
+		    return productDTOs;
 	}
 }

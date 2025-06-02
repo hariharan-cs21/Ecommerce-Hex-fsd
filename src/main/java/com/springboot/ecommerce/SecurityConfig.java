@@ -39,6 +39,7 @@ public class SecurityConfig {
 					
 					.requestMatchers("/api/seller/get-one").hasAuthority("SELLER")
 					.requestMatchers("/api/category/add").hasAuthority("EXECUTIVE")
+					.requestMatchers("/api/executive/register").permitAll()
 					.requestMatchers("/api/category/**").permitAll()
 					.anyRequest().authenticated()
 			)

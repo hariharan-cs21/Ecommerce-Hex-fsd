@@ -8,97 +8,75 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 
+
 @Entity
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int productId;
-    @Column(name="product_brand")
+
+    @Column(name = "product_brand", nullable = false)
     private String brandName;
-    
-    @Column(name="product_name")
-    private String Productname;
-    
-    private double price;
-    
-    @Column(name="stock_qty")
-    private Integer stockQuantity;
-    
-    @Column(name="image_url")
+
+    @Column(name = "product_name", nullable = false)
+    private String productName;
+
+    @Column(name = "image_url")
     private String imageUrl;
-    
+
     @ManyToOne
     private Category category;
-    
+
     @ManyToOne
-    private Seller seller;
+    private Executive executive;
 
-	public int getProductId() {
-		return productId;
-	}
 
-	public void setProductId(int productId) {
-		this.productId = productId;
-	}
+    public int getProductId() {
+        return productId;
+    }
 
-	public String getBrandName() {
-		return brandName;
-	}
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
 
-	public void setBrandName(String brandName) {
-		this.brandName = brandName;
-	}
+    public String getBrandName() {
+        return brandName;
+    }
 
-	public String getProductname() {
-		return Productname;
-	}
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
 
-	public void setProductname(String productname) {
-		Productname = productname;
-	}
+    public String getProductName() {
+        return productName;
+    }
 
-	public double getPrice() {
-		return price;
-	}
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
-	public void setPrice(double price) {
-		this.price = price;
-	}
+    public String getImageUrl() {
+        return imageUrl;
+    }
 
-	public Integer getStockQuantity() {
-		return stockQuantity;
-	}
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
-	public void setStockQuantity(Integer stockQuantity) {
-		this.stockQuantity = stockQuantity;
-	}
+    public Category getCategory() {
+        return category;
+    }
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+    public Executive getExecutive() {
+        return executive;
+    }
 
-	public Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-
-	public Seller getSeller() {
-		return seller;
-	}
-
-	public void setSeller(Seller seller) {
-		this.seller = seller;
-	}
-
-	
-
-    
+    public void setExecutive(Executive executive) {
+        this.executive = executive;
+    }
 }

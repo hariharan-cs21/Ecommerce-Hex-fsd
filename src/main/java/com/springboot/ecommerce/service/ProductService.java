@@ -6,85 +6,65 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.springboot.ecommerce.dto.ProductDTO;
-import com.springboot.ecommerce.dto.SellerDTO;
+import com.springboot.ecommerce.dto.SellerProductDTO;
 import com.springboot.ecommerce.model.Category;
+import com.springboot.ecommerce.model.Executive;
 import com.springboot.ecommerce.model.Product;
-import com.springboot.ecommerce.model.Seller;
+import com.springboot.ecommerce.model.SellerProduct;
 import com.springboot.ecommerce.repo.CategoryRepository;
+import com.springboot.ecommerce.repo.ExecutiveRepository;
 import com.springboot.ecommerce.repo.ProductRepository;
-import com.springboot.ecommerce.repo.SellerRepository;
+import com.springboot.ecommerce.repo.SellerProductRepository;
 
 @Service
 public class ProductService {
 
 	private ProductRepository productRepository;
-	private SellerRepository sellerRepository;
-    private CategoryRepository categoryRepository;
-	
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,SellerRepository sellerRepository) {
+	private CategoryRepository categoryRepository;
+	private ExecutiveRepository executiveRepository;
+	private SellerProductRepository sellerProductRepository;
+
+	public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
+			SellerProductRepository sellerProductRepository, ExecutiveRepository executiveRepository) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
-		this.sellerRepository=sellerRepository;
+		this.executiveRepository = executiveRepository;
+		this.sellerProductRepository = sellerProductRepository;
 	}
 
-
-	public Product add(Product product, int categoryId,int sellerId) {
+	public Product createProduct(Product product, int categoryId, String executiveUsername) {
 		Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+				.orElseThrow(() -> new RuntimeException("Category not found"));
+
+		Executive executive = executiveRepository.getExecutiveByUsername(executiveUsername);
+
 		product.setCategory(category);
-		//seller object get after authentication only (spring security)
-		Seller seller=sellerRepository.findById(sellerId).orElseThrow(() -> new RuntimeException("Seller not found"));
-		product.setSeller(seller);
+		product.setExecutive(executive);
+
 		return productRepository.save(product);
 	}
 
-
-	public Product update(Product updatedProduct, int productId,int sellerId) {
-	    Product existingProduct = productRepository.findById(productId)
-	        .orElseThrow(() -> new RuntimeException("Product not found"));
-	    if (existingProduct.getSeller().getId() != sellerId) {
-	        throw new RuntimeException("You do not have permission to modify this product");
-	    }
-
-	    existingProduct.setBrandName(updatedProduct.getBrandName());
-	    existingProduct.setProductname(updatedProduct.getProductname());
-	    existingProduct.setPrice(updatedProduct.getPrice());
-	    existingProduct.setStockQuantity(updatedProduct.getStockQuantity());
-	    existingProduct.setImageUrl(updatedProduct.getImageUrl());
-
-	   
-	    return productRepository.save(existingProduct);
-	}
-
-
-	public List<Product> getProductsBySellerId(int sellerID) {
-	    return productRepository.findBySellerId(sellerID);
-	}
-
-
 	public List<ProductDTO> getProductsByCategoryId(int categoryId) {
-		 List<Product> products = productRepository.findByCategoryId(categoryId);
-		    List<ProductDTO> productDTOs = new ArrayList<>();
-		    for (Product product : products) {
-		        SellerDTO sellerDTO = new SellerDTO(
-		            product.getSeller().getId(),
-		            product.getSeller().getName()
-		        );
+		List<Product> products = productRepository.findByCategoryId(categoryId);
+		List<ProductDTO> productDTOs = new ArrayList<>();
 
-		        ProductDTO productDTO = new ProductDTO(
-		            product.getProductId(),
-		            product.getBrandName(),
-		            product.getProductname(),
-		            product.getPrice(),
-		            product.getStockQuantity(),
-		            product.getImageUrl(),
-		            product.getCategory(),
-		            sellerDTO
-		        );
+		for (Product product : products) {
+			// Only include product if at least one SellerProduct has stock
+			List<SellerProduct> sellerProducts = sellerProductRepository.findByProductProductId(product.getProductId());
 
-		        productDTOs.add(productDTO);
-		    }
+			boolean available = sellerProducts.stream()
+					.anyMatch(sp -> sp.getStockQuantity() != null && sp.getStockQuantity() > 0);
 
-		    return productDTOs;
+			if (available) {
+				ProductDTO dto = new ProductDTO(product.getProductId(), product.getBrandName(),
+						product.getProductName(), product.getImageUrl());
+				productDTOs.add(dto);
+			}
+		}
+
+		return productDTOs;
 	}
+
+	
+
 }

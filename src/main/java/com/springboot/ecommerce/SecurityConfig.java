@@ -30,17 +30,18 @@ public class SecurityConfig {
 					//seller register
 					.requestMatchers("/api/seller/register").permitAll()
 				
-					.requestMatchers("/api/product/get/**").permitAll()
 					.requestMatchers("/api/user/details").authenticated()
 					.requestMatchers("/getProductsBySellerId/{sellerID}").authenticated()
 					
 					//product add,modify
-					.requestMatchers("/api/product/add","/api/product/update").hasAuthority("SELLER")
-					
+					.requestMatchers("/api/product/add/{productId}","/api/product/update/{sellerProductId}").hasAuthority("SELLER")
+					.requestMatchers("/api/seller-product/request/{categoryId}","/api/seller-product/requests/seller").hasAuthority("SELLER")
 					.requestMatchers("/api/seller/get-one").hasAuthority("SELLER")
+					
 					.requestMatchers("/api/category/add").hasAuthority("EXECUTIVE")
+					.requestMatchers("/api/product/create/{categoryId}").hasAuthority("EXECUTIVE")
+					.requestMatchers("/api/executive/requests/pending","/api/executive/requests/approve/{requestId}").hasAuthority("EXECUTIVE")
 					.requestMatchers("/api/executive/register").permitAll()
-					.requestMatchers("/api/category/**").permitAll()
 					.anyRequest().authenticated()
 			)
 			 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) 

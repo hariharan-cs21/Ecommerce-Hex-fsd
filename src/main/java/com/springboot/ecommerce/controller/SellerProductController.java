@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.ecommerce.dto.SellerProductDTO;
+import com.springboot.ecommerce.model.ProductRequest;
 import com.springboot.ecommerce.model.SellerProduct;
+import com.springboot.ecommerce.service.ProductRequestService;
 import com.springboot.ecommerce.service.SellerProductService;
 
 @RestController
@@ -22,7 +24,9 @@ import com.springboot.ecommerce.service.SellerProductService;
 public class SellerProductController {
 	@Autowired
 	private final SellerProductService sellerProductService;
-
+	@Autowired
+	ProductRequestService productRequestService;
+	
 	public SellerProductController(SellerProductService sellerProductService) {
 		this.sellerProductService = sellerProductService;
 	}
@@ -46,5 +50,22 @@ public class SellerProductController {
 		String username = principal.getName();
 		return sellerProductService.updateSellerProduct(sellerProductId, updatedData, username);
 	}
+	
+	
+	//requesting new product not availble in the portal
+	@PostMapping("/request/{categoryId}")
+	public ProductRequest createProductRequest(
+	        @RequestBody ProductRequest request,
+	        @PathVariable int categoryId,
+	        Principal principal) {
+	    return productRequestService.createProductRequest(request, categoryId, principal.getName());
+	}
+	
+	//getting the new product requests
+	@GetMapping("/requests/seller")
+	public List<ProductRequest> getSellerProductRequests(Principal principal) {
+	    return productRequestService.getRequestsBySeller(principal.getName());
+	}
+
 
 }

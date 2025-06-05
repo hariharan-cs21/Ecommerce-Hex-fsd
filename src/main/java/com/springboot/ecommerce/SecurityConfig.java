@@ -27,16 +27,20 @@ public class SecurityConfig {
 			.csrf((csrf) -> csrf.disable()) 
 			.authorizeHttpRequests(authorize -> authorize
 					.requestMatchers("/api/user/signup").permitAll()
+					.requestMatchers("/api/user/details").authenticated()
 					//seller register
 					.requestMatchers("/api/seller/register").permitAll()
+					.requestMatchers("/api/customer/register").permitAll()
 				
-					.requestMatchers("/api/user/details").authenticated()
-					.requestMatchers("/getProductsBySellerId/{sellerID}").authenticated()
+					.requestMatchers("/api/address/list","/api/address/add").hasAuthority("CUSTOMER")
 					
-					//product add,modify
-					.requestMatchers("/api/product/add/{productId}","/api/product/update/{sellerProductId}").hasAuthority("SELLER")
-					.requestMatchers("/api/seller-product/request/{categoryId}","/api/seller-product/requests/seller").hasAuthority("SELLER")
+					
 					.requestMatchers("/api/seller/get-one").hasAuthority("SELLER")
+					.requestMatchers("/getProductsBySellerId/{sellerID}").authenticated()
+										.requestMatchers("/api/product/add/{productId}","/api/product/update/{sellerProductId}").hasAuthority("SELLER")
+					.requestMatchers("/api/seller-product/request/{categoryId}","/api/seller-product/requests/seller").hasAuthority("SELLER")
+					
+					
 					
 					.requestMatchers("/api/category/add").hasAuthority("EXECUTIVE")
 					.requestMatchers("/api/product/create/{categoryId}").hasAuthority("EXECUTIVE")

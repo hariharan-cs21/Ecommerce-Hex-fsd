@@ -9,17 +9,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Order {
+public class Orders {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
 
-    @ManyToOne
-    private Customer customer;
+	@ManyToOne
+	private Customer customer;
 
-    private LocalDateTime orderDate;
+	@ManyToOne
+	private Address address;
 
-    private String status;
+	private LocalDateTime orderDate;
+
+	private String status;
 
 	public int getId() {
 		return id;
@@ -52,5 +55,13 @@ public class Order {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-    
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
 }

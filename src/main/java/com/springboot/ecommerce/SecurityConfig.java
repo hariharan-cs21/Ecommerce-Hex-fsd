@@ -33,6 +33,8 @@ public class SecurityConfig {
 					.requestMatchers("/api/customer/register").permitAll()
 				
 					.requestMatchers("/api/address/list","/api/address/add").hasAuthority("CUSTOMER")
+					.requestMatchers("/api/cart/add","/api/cart/items","/api/cart/clear").hasAuthority("CUSTOMER")
+					.requestMatchers("/api/order/history").hasAuthority("CUSTOMER")
 					
 					
 					.requestMatchers("/api/seller/get-one").hasAuthority("SELLER")

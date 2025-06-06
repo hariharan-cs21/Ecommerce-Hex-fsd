@@ -8,4 +8,5 @@ import com.springboot.ecommerce.model.CartItem;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
     List<CartItem> findByCartId(int cartId);
+    void deleteByCartId(int cartId);
 }

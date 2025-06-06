@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.springboot.ecommerce.model.Order;
+import com.springboot.ecommerce.model.Orders;
 
-public interface OrderRepository extends JpaRepository<Order, Integer> {
-    List<Order> findByCustomerId(int customerId);
+public interface OrderRepository extends JpaRepository<Orders, Integer> {
+    List<Orders> findByCustomerId(int customerId);
 }

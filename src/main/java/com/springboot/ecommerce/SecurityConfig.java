@@ -38,7 +38,9 @@ public class SecurityConfig {
 					
 					
 					.requestMatchers("/api/seller/get-one").hasAuthority("SELLER")
+					.requestMatchers("/api/seller/orders/get").hasAuthority("SELLER")
 					.requestMatchers("/getProductsBySellerId/{sellerID}").authenticated()
+					
 										.requestMatchers("/api/product/add/{productId}","/api/product/update/{sellerProductId}").hasAuthority("SELLER")
 					.requestMatchers("/api/seller-product/request/{categoryId}","/api/seller-product/requests/seller").hasAuthority("SELLER")
 					

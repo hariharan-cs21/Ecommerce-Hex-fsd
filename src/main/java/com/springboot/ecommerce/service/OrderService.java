@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.ecommerce.dto.OrderHistoryDTO;
+import com.springboot.ecommerce.enums.OrderItemStatus;
 import com.springboot.ecommerce.model.Address;
 import com.springboot.ecommerce.model.Cart;
 import com.springboot.ecommerce.model.CartItem;
@@ -89,6 +90,7 @@ public class OrderService {
             orderItem.setSellerProduct(sp);
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setPrice(sp.getPrice());
+            orderItem.setStatus(OrderItemStatus.PENDING);
             orderItemRepository.save(orderItem);
         }
 

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.springboot.ecommerce.enums.OrderItemStatus;
 import com.springboot.ecommerce.model.OrderItem;
 
 @Component
@@ -101,7 +102,7 @@ public class OrderHistoryDTO {
 			dto.setShippingCity(first.getOrder().getAddress().getCity());
 			dto.setStreet(first.getOrder().getAddress().getStreet());
 			dto.setContact(first.getOrder().getAddress().getContactNumber());
-			
+
 			double total = 0;
 			List<OrderItemDetail> itemDetails = new ArrayList<>();
 
@@ -110,6 +111,7 @@ public class OrderHistoryDTO {
 				detail.setProductName(item.getSellerProduct().getProduct().getProductName());
 				detail.setQuantity(item.getQuantity());
 				detail.setPrice(item.getPrice());
+				detail.setItemStatus(item.getStatus());
 				itemDetails.add(detail);
 				total += item.getQuantity() * item.getPrice();
 			}
@@ -123,9 +125,19 @@ public class OrderHistoryDTO {
 	}
 
 	public static class OrderItemDetail {
+		private OrderItemStatus itemStatus;
+
 		private String productName;
 		private int quantity;
 		private double price;
+
+		public OrderItemStatus getItemStatus() {
+			return itemStatus;
+		}
+
+		public void setItemStatus(OrderItemStatus orderItemStatus) {
+			this.itemStatus = orderItemStatus;
+		}
 
 		public String getProductName() {
 			return productName;

@@ -8,4 +8,7 @@ import com.springboot.ecommerce.model.OrderItem;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
     List<OrderItem> findByOrderCustomerId(int customerId);
+    
+    List<OrderItem> findBySellerProductSellerId(int sellerId);
+
 }

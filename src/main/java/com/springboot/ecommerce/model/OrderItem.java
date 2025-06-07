@@ -1,6 +1,10 @@
 package com.springboot.ecommerce.model;
 
+import com.springboot.ecommerce.enums.OrderItemStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,6 +27,17 @@ public class OrderItem {
 	private int quantity;
 
 	private double price;
+	
+	@Enumerated(EnumType.STRING)
+	private OrderItemStatus status;
+
+	public OrderItemStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(OrderItemStatus status) {
+		this.status = status;
+	}
 
 	public int getId() {
 		return id;

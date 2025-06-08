@@ -23,6 +23,9 @@ public class OrderItem {
 
 	@ManyToOne
 	private SellerProduct sellerProduct;
+	
+	@ManyToOne
+	private WarehouseDispatch dispatch;
 
 	private int quantity;
 
@@ -30,6 +33,15 @@ public class OrderItem {
 	
 	@Enumerated(EnumType.STRING)
 	private OrderItemStatus status;
+	
+
+	public WarehouseDispatch getDispatch() {
+		return dispatch;
+	}
+
+	public void setDispatch(WarehouseDispatch dispatch) {
+		this.dispatch = dispatch;
+	}
 
 	public OrderItemStatus getStatus() {
 		return status;

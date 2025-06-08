@@ -25,83 +25,82 @@ import com.springboot.ecommerce.repo.SellerProductRepository;
 
 import jakarta.persistence.criteria.Order;
 
-
-
 @Service
 public class OrderService {
 
-    private final CartService cartService;
-    private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final SellerProductRepository sellerProductRepository;
-    private final CustomerRepository customerRepository;
-    private final AddressRepository addressRepository;
-    private final CartItemRepository cartItemRepository;
-    
-    @Autowired
-    OrderHistoryDTO orderHistoryDTO;
+	private final CartService cartService;
+	private final OrderRepository orderRepository;
+	private final OrderItemRepository orderItemRepository;
+	private final SellerProductRepository sellerProductRepository;
+	private final CustomerRepository customerRepository;
+	private final AddressRepository addressRepository;
+	private final CartItemRepository cartItemRepository;
 
-    public OrderService(CartService cartService, OrderRepository orderRepository,
-                        OrderItemRepository orderItemRepository,
-                        SellerProductRepository sellerProductRepository,
-                        CustomerRepository customerRepository,
-                        AddressRepository addressRepository,
-                        CartItemRepository cartItemRepository) {
-        this.cartService = cartService;
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.sellerProductRepository = sellerProductRepository;
-        this.customerRepository = customerRepository;
-        this.addressRepository = addressRepository;
-        this.cartItemRepository = cartItemRepository;
-    }
+	@Autowired
+	OrderHistoryDTO orderHistoryDTO;
 
-    @Transactional
-    public Orders placeOrder(String username, int addressId) {
-        Customer customer = customerRepository.getCustomerByUsername(username);
-                
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+	public OrderService(CartService cartService, OrderRepository orderRepository,
+			OrderItemRepository orderItemRepository, SellerProductRepository sellerProductRepository,
+			CustomerRepository customerRepository, AddressRepository addressRepository,
+			CartItemRepository cartItemRepository) {
+		this.cartService = cartService;
+		this.orderRepository = orderRepository;
+		this.orderItemRepository = orderItemRepository;
+		this.sellerProductRepository = sellerProductRepository;
+		this.customerRepository = customerRepository;
+		this.addressRepository = addressRepository;
+		this.cartItemRepository = cartItemRepository;
+	}
 
-        Cart cart = cartService.getCartByCustomerUsername(username);
-        List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
+	@Transactional
+	public Orders placeOrder(String username, int addressId) {
+		Customer customer = customerRepository.getCustomerByUsername(username);
 
-        if (cartItems.isEmpty()) {
-            throw new RuntimeException("Cart is empty");
-        }
+		Address address = addressRepository.findById(addressId)
+				.orElseThrow(() -> new RuntimeException("Address not found"));
+		if (address.getCustomer().getId()!=customer.getId()) {
+			throw new RuntimeException("Unauthorized: Address does not belong to the customer");
+		}
+		Cart cart = cartService.getCartByCustomerUsername(username);
+		List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
 
-        Orders order = new Orders();
-        order.setCustomer(customer);
-        order.setAddress(address);
-        order.setOrderDate(LocalDateTime.now());
-        order.setStatus("PENDING");
-        order = orderRepository.save(order);
+		if (cartItems.isEmpty()) {
+			throw new RuntimeException("Cart is empty");
+		}
 
-        for (CartItem cartItem : cartItems) {
-            SellerProduct sp = cartItem.getSellerProduct();
-            if (sp.getStockQuantity() < cartItem.getQuantity()) {
-                throw new RuntimeException("Insufficent quntity for: " + sp.getProduct().getProductName());
-            }
-            sp.setStockQuantity(sp.getStockQuantity() - cartItem.getQuantity());
-            sellerProductRepository.save(sp);
+		Orders order = new Orders();
+		order.setCustomer(customer);
+		order.setAddress(address);
+		order.setOrderDate(LocalDateTime.now());
+		order.setStatus("PENDING");
+		order = orderRepository.save(order);
 
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setSellerProduct(sp);
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(sp.getPrice());
-            orderItem.setStatus(OrderItemStatus.PENDING);
-            orderItemRepository.save(orderItem);
-        }
+		for (CartItem cartItem : cartItems) {
+			SellerProduct sp = cartItem.getSellerProduct();
+			if (sp.getStockQuantity() < cartItem.getQuantity()) {
+				throw new RuntimeException("Insufficent quntity for: " + sp.getProduct().getProductName());
+			}
+			sp.setStockQuantity(sp.getStockQuantity() - cartItem.getQuantity());
+			sellerProductRepository.save(sp);
 
-        // to clear cart items alone not cart
-        cartItemRepository.deleteByCartId(cart.getId());
+			OrderItem orderItem = new OrderItem();
+			orderItem.setOrder(order);
+			orderItem.setSellerProduct(sp);
+			orderItem.setQuantity(cartItem.getQuantity());
+			orderItem.setPrice(sp.getPrice());
+			orderItem.setStatus(OrderItemStatus.PENDING);
+			orderItemRepository.save(orderItem);
+		}
 
-        return order;
-    }
-    public List<OrderHistoryDTO> getOrderHistory(String username) {
-    	Customer customer=customerRepository.getCustomerByUsername(username);
-        List<OrderItem>list= orderItemRepository.findByOrderCustomerId(customer.getId());
-        return orderHistoryDTO.convertIntoOrderHistoryDTO(list);
-    }
+		// to clear cart items alone not cart
+		cartItemRepository.deleteByCartId(cart.getId());
+
+		return order;
+	}
+
+	public List<OrderHistoryDTO> getOrderHistory(String username) {
+		Customer customer = customerRepository.getCustomerByUsername(username);
+		List<OrderItem> list = orderItemRepository.findByOrderCustomerId(customer.getId());
+		return orderHistoryDTO.convertIntoOrderHistoryDTO(list);
+	}
 }

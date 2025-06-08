@@ -44,7 +44,7 @@ public class SecurityConfig {
 										.requestMatchers("/api/product/add/{productId}","/api/product/update/{sellerProductId}").hasAuthority("SELLER")
 					.requestMatchers("/api/seller-product/request/{categoryId}","/api/seller-product/requests/seller").hasAuthority("SELLER")
 					
-					
+					.requestMatchers("/api/warehouse/shipped").authenticated()
 					
 					.requestMatchers("/api/category/add").hasAuthority("EXECUTIVE")
 					.requestMatchers("/api/product/create/{categoryId}").hasAuthority("EXECUTIVE")

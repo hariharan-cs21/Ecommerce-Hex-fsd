@@ -1,6 +1,5 @@
 package com.springboot.ecommerce.dto;
 
-import com.springboot.ecommerce.model.Category;
 
 public class ProductDTO {
 

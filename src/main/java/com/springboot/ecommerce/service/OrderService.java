@@ -103,4 +103,31 @@ public class OrderService {
 		List<OrderItem> list = orderItemRepository.findByOrderCustomerId(customer.getId());
 		return orderHistoryDTO.convertIntoOrderHistoryDTO(list);
 	}
+	
+	public void cancelOrderByCustomer(int orderId, String username) {
+	    Orders order = orderRepository.findById(orderId)
+	        .orElseThrow(() -> new RuntimeException("Order not found"));
+
+	    if (!order.getCustomer().getUser().getUsername().equals(username)) {
+	        throw new RuntimeException("Unauthorized to cancel this order.");
+	    }
+
+	    List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+
+	    boolean allCancelable = orderItems.stream()
+	        .allMatch(item -> item.getStatus() == OrderItemStatus.PENDING || item.getStatus() == OrderItemStatus.APPROVED);
+
+	    if (!allCancelable) {
+	        throw new RuntimeException("Order cannot be cancelled. Some items have already been processed.");
+	    }
+
+	    for (OrderItem item : orderItems) {
+	        item.setStatus(OrderItemStatus.CANCELLED);
+	        orderItemRepository.save(item);
+	    }
+
+	    order.setStatus("CANCELLED");
+	    orderRepository.save(order);
+	}
+
 }

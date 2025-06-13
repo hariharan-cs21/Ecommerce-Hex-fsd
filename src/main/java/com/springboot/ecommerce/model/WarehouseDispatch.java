@@ -17,7 +17,9 @@ public class WarehouseDispatch {
 	private int id;
 	private int customerId;
 	private LocalDateTime dispatchTime;
+	private LocalDateTime deliveredTime;
 
+	
 	@ManyToOne
 	private WarehouseExecutive executive;
 
@@ -43,6 +45,13 @@ public class WarehouseDispatch {
 
 	public void setDispatchTime(LocalDateTime dispatchTime) {
 		this.dispatchTime = dispatchTime;
+	}
+	public LocalDateTime getDeliveredTime() {
+		return deliveredTime;
+	}
+
+	public void setDeliveredTime(LocalDateTime deliveredTime) {
+		this.deliveredTime = deliveredTime;
 	}
 
 	public WarehouseExecutive getExecutive() {

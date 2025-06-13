@@ -39,15 +39,17 @@ public class WarehouseService {
 
 	@Transactional
 	public void dispatchOrdersByOrderd(String username, int orderId) {
-		Orders order=orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-		Customer customer=customerRepository.findById(order.getCustomer().getId()).orElseThrow(() -> new RuntimeException("Customer details not available"));
+		Orders order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+		Customer customer = customerRepository.findById(order.getCustomer().getId())
+				.orElseThrow(() -> new RuntimeException("Customer details not available"));
 		WarehouseExecutive executive = execRepo.getByUserUsername(username);
 
 		List<OrderItem> orderItems = orderItemRepo.findByOrderId(orderId);
 
 		boolean allApproved = orderItems.stream().allMatch(item -> item.getStatus() == OrderItemStatus.SHIPPED);
 		boolean isDispatched = orderItems.stream().allMatch(item -> item.getStatus() == OrderItemStatus.DISPATCHED);
-		if(isDispatched) throw new RuntimeException("Already Dispatched");
+		if (isDispatched)
+			throw new RuntimeException("Already Dispatched");
 		if (!allApproved) {
 			throw new RuntimeException("Cannot dispatch. Not all items are SHIPPED for this order");
 		}
@@ -69,12 +71,18 @@ public class WarehouseService {
 	@Transactional
 	public void markItemsAsDelivered(List<Integer> orderItemIds) {
 		List<OrderItem> items = orderItemRepo.findAllById(orderItemIds);
+		if (items.size() != orderItemIds.size()) {
+			throw new RuntimeException("Some order item IDs are invalid");
+		}
+		boolean allDispatched = items.stream().allMatch(item -> item.getStatus() == OrderItemStatus.DISPATCHED);
 
+		if (!allDispatched) {
+			throw new RuntimeException("All order items must be in DISPATCHED status to mark as DELIVERED");
+		}
 		for (OrderItem item : items) {
-			if (item.getStatus() == OrderItemStatus.DISPATCHED) {
-				item.setStatus(OrderItemStatus.DELIVERED);
-				orderItemRepo.save(item);
-			}
+			item.setStatus(OrderItemStatus.DELIVERED);
+			orderItemRepo.save(item);
+
 		}
 
 		Set<Orders> ordersToCheck = items.stream().map(OrderItem::getOrder).collect(Collectors.toSet());
@@ -87,6 +95,16 @@ public class WarehouseService {
 			if (allDelivered) {
 				order.setStatus("DELIVERED");
 				orderRepository.save(order);
+
+				// setting deliverytime for order based on all item delivered
+				Set<WarehouseDispatch> dispatches = orderItems.stream().map(OrderItem::getDispatch)
+						.filter(d -> d != null).collect(Collectors.toSet());
+				for (WarehouseDispatch dispatch : dispatches) {
+					if (dispatch.getDeliveredTime() == null) {
+						dispatch.setDeliveredTime(LocalDateTime.now());
+						dispatchRepo.save(dispatch);
+					}
+				}
 			}
 		}
 	}

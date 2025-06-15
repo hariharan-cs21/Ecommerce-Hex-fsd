@@ -1,6 +1,7 @@
 package com.springboot.ecommerce.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -65,6 +66,46 @@ public class ProductService {
 		return productDTOs;
 	}
 
-	
+	public List<ProductDTO> getRandomProducts(int limit) {
+		List<Product> allProducts = productRepository.findAll();
+		Collections.shuffle(allProducts);
+
+		List<ProductDTO> randomProducts = new ArrayList<>();
+
+		for (Product product : allProducts) {
+			ProductDTO dto = new ProductDTO(
+					product.getProductId(),
+					product.getBrandName(),
+					product.getProductName(),
+					product.getImageUrl());
+			randomProducts.add(dto);
+
+			if (randomProducts.size() >= limit) {
+				break;
+			}
+		}
+
+		return randomProducts;
+	}
+
+	public List<SellerProductDTO> getSellerProductsByProductId(int productId) {
+		List<SellerProduct> sellerProducts = sellerProductRepository.findByProductProductId(productId);
+		List<SellerProductDTO> dtoList = new ArrayList<>();
+
+		for (SellerProduct sp : sellerProducts) {
+			SellerProductDTO dto = new SellerProductDTO();
+			dto.setProductId(sp.getProduct().getProductId());
+			dto.setSellerProductId(sp.getId());
+			dto.setImageUrl(sp.getProduct().getImageUrl());
+			dto.setProductName(sp.getProduct().getProductName());
+			dto.setBrandName(sp.getProduct().getBrandName());
+			dto.setSellerName(sp.getSeller().getName());
+			dto.setPrice(sp.getPrice());
+			dto.setStockQuantity(sp.getStockQuantity());
+			dtoList.add(dto);
+		}
+
+		return dtoList;
+	}
 
 }

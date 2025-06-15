@@ -6,9 +6,15 @@ public class SellerProductDTO {
     private String productName;
     private String imageUrl;
     private double price;
+    private String SellerName;
     private Integer stockQuantity;
+    private int sellerProductId;
 
-    public SellerProductDTO(int productId, String brandName, String productName, String imageUrl, double price, Integer stockQuantity) {
+    public SellerProductDTO() {
+    }
+
+    public SellerProductDTO(int productId, String brandName, String productName, String imageUrl, double price,
+            Integer stockQuantity) {
         this.productId = productId;
         this.brandName = brandName;
         this.productName = productName;
@@ -64,4 +70,21 @@ public class SellerProductDTO {
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
+
+    public String getSellerName() {
+        return SellerName;
+    }
+
+    public void setSellerName(String sellerName) {
+        SellerName = sellerName;
+    }
+
+    public int getSellerProductId() {
+        return sellerProductId;
+    }
+
+    public void setSellerProductId(int sellerProductId) {
+        this.sellerProductId = sellerProductId;
+    }
+
 }

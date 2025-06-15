@@ -23,8 +23,6 @@ import com.springboot.ecommerce.repo.OrderItemRepository;
 import com.springboot.ecommerce.repo.OrderRepository;
 import com.springboot.ecommerce.repo.SellerProductRepository;
 
-import jakarta.persistence.criteria.Order;
-
 @Service
 public class OrderService {
 
@@ -58,7 +56,7 @@ public class OrderService {
 
 		Address address = addressRepository.findById(addressId)
 				.orElseThrow(() -> new RuntimeException("Address not found"));
-		if (address.getCustomer().getId()!=customer.getId()) {
+		if (address.getCustomer().getId() != customer.getId()) {
 			throw new RuntimeException("Unauthorized: Address does not belong to the customer");
 		}
 		Cart cart = cartService.getCartByCustomerUsername(username);
@@ -103,31 +101,34 @@ public class OrderService {
 		List<OrderItem> list = orderItemRepository.findByOrderCustomerId(customer.getId());
 		return orderHistoryDTO.convertIntoOrderHistoryDTO(list);
 	}
-	
+
 	public void cancelOrderByCustomer(int orderId, String username) {
-	    Orders order = orderRepository.findById(orderId)
-	        .orElseThrow(() -> new RuntimeException("Order not found"));
+		Orders order = orderRepository.findById(orderId)
+				.orElseThrow(() -> new RuntimeException("Order not found"));
 
-	    if (!order.getCustomer().getUser().getUsername().equals(username)) {
-	        throw new RuntimeException("Unauthorized to cancel this order.");
-	    }
+		if (!order.getCustomer().getUser().getUsername().equals(username)) {
+			throw new RuntimeException("Unauthorized to cancel this order.");
+		}
 
-	    List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+		List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
 
-	    boolean allCancelable = orderItems.stream()
-	        .allMatch(item -> item.getStatus() == OrderItemStatus.PENDING || item.getStatus() == OrderItemStatus.APPROVED);
+		boolean allCancelable = orderItems.stream()
+				.allMatch(item -> item.getStatus() == OrderItemStatus.PENDING
+						|| item.getStatus() == OrderItemStatus.APPROVED);
 
-	    if (!allCancelable) {
-	        throw new RuntimeException("Order cannot be cancelled. Some items have already been processed.");
-	    }
+		if (!allCancelable) {
+			throw new RuntimeException("Order cannot be cancelled. Some items have already been processed.");
+		}
 
-	    for (OrderItem item : orderItems) {
-	        item.setStatus(OrderItemStatus.CANCELLED);
-	        orderItemRepository.save(item);
-	    }
+		for (OrderItem item : orderItems) {
+			int qty = item.getQuantity();
+			item.getSellerProduct().setStockQuantity(item.getSellerProduct().getStockQuantity() + qty);
+			item.setStatus(OrderItemStatus.CANCELLED);
+			orderItemRepository.save(item);
+		}
 
-	    order.setStatus("CANCELLED");
-	    orderRepository.save(order);
+		order.setStatus("CANCELLED");
+		orderRepository.save(order);
 	}
 
 }

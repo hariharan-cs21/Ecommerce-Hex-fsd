@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,8 @@ import com.springboot.ecommerce.service.CartService;
 
 @RestController
 @RequestMapping("/api/cart")
+@CrossOrigin(origins = "http://localhost:5173")
+
 public class CartController {
 
 	private final CartService cartService;
@@ -40,8 +43,8 @@ public class CartController {
 	@DeleteMapping("/clear")
 	public ResponseEntity<?> clearCart(Principal principal) {
 		cartService.clearCart(principal.getName());
-		Map<String,String> map = new HashMap<>();
-		map.put("message","Cart cleared");
+		Map<String, String> map = new HashMap<>();
+		map.put("message", "Cart cleared");
 		return ResponseEntity.status(HttpStatus.OK).body(map);
 	}
 }

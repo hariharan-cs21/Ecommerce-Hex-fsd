@@ -2,7 +2,9 @@ package com.springboot.ecommerce.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -127,6 +129,30 @@ public class WarehouseService {
 
 			result.add(dto);
 		}
+
+		return result;
+	}
+
+	public Map<String, LocalDateTime> getDispatchTimestamps(String username, int orderId) {
+		Customer customer = customerRepository.getCustomerByUsername(username);
+		int customerId = customer.getId();
+		List<OrderItem> items = orderItemRepo.findByOrderId(orderId).stream()
+				.filter(i -> i.getOrder().getCustomer().getId() == customerId)
+				.toList();
+
+		if (items.isEmpty()) {
+			throw new RuntimeException("No items found for this customer and order");
+		}
+
+		WarehouseDispatch dispatch = items.get(0).getDispatch();
+
+		if (dispatch == null) {
+			throw new RuntimeException("Dispatch info not available");
+		}
+
+		Map<String, LocalDateTime> result = new HashMap<>();
+		result.put("dispatchTime", dispatch.getDispatchTime());
+		result.put("deliveredTime", dispatch.getDeliveredTime());
 
 		return result;
 	}

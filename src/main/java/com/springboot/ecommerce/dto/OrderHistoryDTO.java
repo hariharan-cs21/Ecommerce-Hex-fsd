@@ -112,6 +112,7 @@ public class OrderHistoryDTO {
 				detail.setQuantity(item.getQuantity());
 				detail.setPrice(item.getPrice());
 				detail.setItemStatus(item.getStatus());
+				detail.setItemId(item.getId());
 				itemDetails.add(detail);
 				total += item.getQuantity() * item.getPrice();
 			}
@@ -130,6 +131,7 @@ public class OrderHistoryDTO {
 		private String productName;
 		private int quantity;
 		private double price;
+		private int itemId;
 
 		public OrderItemStatus getItemStatus() {
 			return itemStatus;
@@ -161,6 +163,14 @@ public class OrderHistoryDTO {
 
 		public void setPrice(double price) {
 			this.price = price;
+		}
+
+		public int getItemId() {
+			return itemId;
+		}
+
+		public void setItemId(int itemId) {
+			this.itemId = itemId;
 		}
 	}
 }

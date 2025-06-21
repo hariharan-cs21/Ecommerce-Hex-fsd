@@ -31,8 +31,7 @@ public class SellerOrderService {
 			OrderItemStatus.valueOf(statusFilter.toUpperCase());
 		}
 		if (statusFilter != null && !statusFilter.isEmpty()) {
-			items = items.stream().filter(oi -> oi.getStatus().name().equalsIgnoreCase(statusFilter))
-					.collect(Collectors.toList());
+			items = items.stream().filter(oi -> oi.getStatus().name().equalsIgnoreCase(statusFilter)).toList();
 		}
 
 		Map<Integer, List<OrderItem>> grouped = items.stream()
@@ -48,6 +47,7 @@ public class SellerOrderService {
 			dto.setStreet(first.getOrder().getAddress().getStreet());
 			dto.setCity(first.getOrder().getAddress().getCity());
 			dto.setContactNumber(first.getOrder().getAddress().getContactNumber());
+			dto.setOrderDateTime(first.getOrder().getOrderDate());
 
 			List<SellerOrderItemDTO.SellerProductDTO> productList = new ArrayList<>();
 			for (OrderItem item : group) {

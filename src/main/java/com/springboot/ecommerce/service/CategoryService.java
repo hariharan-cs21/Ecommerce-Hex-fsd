@@ -1,5 +1,7 @@
 package com.springboot.ecommerce.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.springboot.ecommerce.model.Category;
@@ -30,6 +32,10 @@ public class CategoryService {
 		existingCategory.setCategoryName(categoryDetails.getCategoryName());
 
 		return categoryRepository.save(existingCategory);
+	}
+
+	public List<Category> getCategories() {
+		return categoryRepository.findAll();
 	}
 
 }

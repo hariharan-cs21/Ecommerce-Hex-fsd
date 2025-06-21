@@ -40,4 +40,19 @@ public class AddressService {
 		}
 		addressRepository.deleteById(addressId);
 	}
+
+	public Address updateAddress(int id, Address address) {
+		Address existingAddress = addressRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Address not found"));
+
+		existingAddress.setStreet(address.getStreet());
+		existingAddress.setCity(address.getCity());
+		existingAddress.setState(address.getState());
+		existingAddress.setPostalCode(address.getPostalCode());
+		existingAddress.setCountry(address.getCountry());
+		existingAddress.setContactNumber(address.getContactNumber());
+
+		return addressRepository.save(existingAddress);
+	}
+
 }

@@ -61,18 +61,22 @@ public class SellerProductService {
 	}
 
 	public SellerProduct updateSellerProduct(int id, SellerProduct updatedData, String username) {
-	    SellerProduct existing = sellerProductRepository.findById(id)
-	        .orElseThrow(() -> new RuntimeException("SellerProduct not found"));
+		SellerProduct existing = sellerProductRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("SellerProduct not found"));
 
-	    Seller seller = sellerRepository.getSellerByUsername(username);
-	    if (existing.getSeller().getId() != seller.getId()) {
-	        throw new RuntimeException("You are not authorized to update this product.");
-	    }
+		Seller seller = sellerRepository.getSellerByUsername(username);
+		if (existing.getSeller().getId() != seller.getId()) {
+			throw new RuntimeException("You are not authorized to update this product.");
+		}
 
-	    existing.setStockQuantity(updatedData.getStockQuantity());
-	    existing.setPrice(updatedData.getPrice());
+		existing.setStockQuantity(updatedData.getStockQuantity());
+		existing.setPrice(updatedData.getPrice());
 
-	    return sellerProductRepository.save(existing);
+		return sellerProductRepository.save(existing);
+	}
+
+	public int getStock(int sellerProductId) {
+		return sellerProductRepository.getStockBySellerProduct(sellerProductId);
 	}
 
 }

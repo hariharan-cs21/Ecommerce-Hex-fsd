@@ -26,30 +26,36 @@ public class SecurityConfig {
 				.csrf((csrf) -> csrf.disable())
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/api/user/signup").permitAll()
-						.requestMatchers("/api/user/details").authenticated()
+						.requestMatchers("/api/user/details").permitAll()
+						.requestMatchers("/api/user/token").permitAll()
 						// seller register
 						.requestMatchers("/api/seller/register").permitAll()
 						.requestMatchers("/api/customer/register").permitAll()
 						.requestMatchers("/api/product/random", "/api/product/{productId}/sellers").permitAll()
 
-						.requestMatchers("/api/address/list", "/api/address/add").hasAuthority("CUSTOMER")
-						.requestMatchers("/api/cart/add", "/api/cart/items", "/api/cart/clear").hasAuthority("CUSTOMER")
-						.requestMatchers("/api/order/history").hasAuthority("CUSTOMER")
-
+						.requestMatchers("/api/address/list", "/api/address/add").permitAll()
+						.requestMatchers("/api/cart/add", "/api/cart/items", "/api/cart/clear").permitAll()
+						.requestMatchers("/api/order/history").permitAll()
+						.requestMatchers("/api/order/place/{addressId}", "/api/order/cancel/{orderId}").permitAll()
+						.requestMatchers("/api/warehouse/dispatch-times/order/{orderId}").permitAll()
+						.requestMatchers("/api/category/getAll").permitAll()
+						.requestMatchers("/api/product/get/category/{categoryId}").permitAll()
 						.requestMatchers("/api/seller/get-one").hasAuthority("SELLER")
-						.requestMatchers("/api/seller/orders/get").hasAuthority("SELLER")
+						.requestMatchers("/api/seller/orders/get").permitAll()
+						.requestMatchers("/api/seller/orders/update-status/{orderItemId}").permitAll()
+						.requestMatchers("/api/product/upload-pic/{productId}").permitAll()
 						.requestMatchers("/getProductsBySellerId/{sellerID}").authenticated()
-
+						.requestMatchers("/api/address/delete/{id}", "/api/address/update/{id}").permitAll()
 						.requestMatchers("/api/product/add/{productId}", "/api/product/update/{sellerProductId}")
 						.hasAuthority("SELLER")
 						.requestMatchers("/api/seller-product/request/{categoryId}",
-								"/api/seller-product/requests/seller")
-						.hasAuthority("SELLER")
+								"/api/seller-product/requests/seller", "/api/seller-product/getStock/{sellerProductId}")
+						.permitAll()
 
 						.requestMatchers("/api/warehouse/shipped").authenticated()
 
 						.requestMatchers("/api/category/add").hasAuthority("EXECUTIVE")
-						.requestMatchers("/api/product/create/{categoryId}").hasAuthority("EXECUTIVE")
+						.requestMatchers("/api/product/create/{categoryId}").permitAll()
 						.requestMatchers("/api/executive/requests/pending",
 								"/api/executive/requests/approve/{requestId}")
 						.hasAuthority("EXECUTIVE")

@@ -1,10 +1,16 @@
 package com.springboot.ecommerce.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.ecommerce.dto.ProductDTO;
 import com.springboot.ecommerce.dto.SellerProductDTO;
@@ -106,6 +112,25 @@ public class ProductService {
 		}
 
 		return dtoList;
+	}
+
+	public Product uploadProfilePic(int productId, String name, MultipartFile file) throws IOException {
+		Product product = productRepository.findById(productId)
+				.orElseThrow(() -> new RuntimeException("Product not found"));
+		String originalFile = file.getOriginalFilename();
+		String extension = originalFile.split("\\.")[1];
+
+		if (!(List.of("jpg", "jpeg", "png", "svg", "gif").contains(extension.toLowerCase()))) {
+			throw new RuntimeException(
+					"Invalid File Type: " + extension + ", Upload only" + List.of("jpg", "jpeg", "png", "svg", "gif"));
+		}
+		String uploadFolder = "C:\\Users\\hari0\\Desktop\\Ecomm-React\\Ecomm-react\\public\\images";
+		Files.createDirectories(Path.of(uploadFolder));
+		Path path = Paths.get(uploadFolder, originalFile);
+		Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+		product.setImageUrl(originalFile);
+
+		return productRepository.save(product);
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +21,7 @@ import com.springboot.ecommerce.service.SellerOrderService;
 
 @RestController
 @RequestMapping("/api/seller/orders")
+@CrossOrigin(origins = "http://localhost:5173")
 public class SellerOrderController {
 	@Autowired
 	private SellerOrderService sellerOrderService;
@@ -29,12 +31,12 @@ public class SellerOrderController {
 		List<SellerOrderItemDTO> orders = sellerOrderService.getSellerOrderView(principal.getName(), status);
 		return ResponseEntity.status(HttpStatus.OK).body(orders);
 	}
-	
+
 	@PutMapping("/update-status/{orderItemId}")
-    public ResponseEntity<?> updateOrderItemStatus(@PathVariable int orderItemId, @RequestParam String status) {
-        Map<String,String> map = new HashMap<>();
-        map.put("message",sellerOrderService.updateOrderItemStatus(orderItemId, status));
-        return ResponseEntity.status(HttpStatus.OK).body(map);
-    }
+	public ResponseEntity<?> updateOrderItemStatus(@PathVariable int orderItemId, @RequestParam String status) {
+		Map<String, String> map = new HashMap<>();
+		map.put("message", sellerOrderService.updateOrderItemStatus(orderItemId, status));
+		return ResponseEntity.status(HttpStatus.OK).body(map);
+	}
 
 }

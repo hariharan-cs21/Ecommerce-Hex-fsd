@@ -14,13 +14,15 @@ public class SellerProductDTO {
     }
 
     public SellerProductDTO(int productId, String brandName, String productName, String imageUrl, double price,
-            Integer stockQuantity) {
+            Integer stockQuantity, String SellerName, int sellerProductId) {
         this.productId = productId;
         this.brandName = brandName;
         this.productName = productName;
         this.imageUrl = imageUrl;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.SellerName = SellerName;
+        this.sellerProductId = sellerProductId;
     }
 
     public int getProductId() {

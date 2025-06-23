@@ -50,21 +50,20 @@ public class SellerProductService {
 	public List<SellerProductDTO> getSellerProducts(int sellerId) {
 		List<SellerProduct> sellerProducts = sellerProductRepository.findBySellerId(sellerId);
 		List<SellerProductDTO> dtoList = new ArrayList<>();
-
 		for (SellerProduct sp : sellerProducts) {
 			Product p = sp.getProduct();
 			dtoList.add(new SellerProductDTO(p.getProductId(), p.getBrandName(), p.getProductName(), p.getImageUrl(),
-					sp.getPrice(), sp.getStockQuantity()));
+					sp.getPrice(), sp.getStockQuantity(), sp.getSeller().getName(), sp.getId()));
 		}
 
 		return dtoList;
 	}
 
 	public SellerProduct updateSellerProduct(int id, SellerProduct updatedData, String username) {
+		Seller seller = sellerRepository.getSellerByUsername(username);
 		SellerProduct existing = sellerProductRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("SellerProduct not found"));
 
-		Seller seller = sellerRepository.getSellerByUsername(username);
 		if (existing.getSeller().getId() != seller.getId()) {
 			throw new RuntimeException("You are not authorized to update this product.");
 		}
@@ -77,6 +76,33 @@ public class SellerProductService {
 
 	public int getStock(int sellerProductId) {
 		return sellerProductRepository.getStockBySellerProduct(sellerProductId);
+	}
+
+	public List<SellerProductDTO> getSellerProductsByLoggedIn(String name, int productId) {
+		Seller seller = sellerRepository.getSellerByUsername(name);
+		List<SellerProduct> sellerProducts = sellerProductRepository.findBySellerIdandProductId(seller.getId(),
+				productId);
+		List<SellerProductDTO> dtoList = new ArrayList<>();
+		for (SellerProduct sp : sellerProducts) {
+			Product p = sp.getProduct();
+			dtoList.add(new SellerProductDTO(p.getProductId(), p.getBrandName(), p.getProductName(), p.getImageUrl(),
+					sp.getPrice(), sp.getStockQuantity(), sp.getSeller().getName(), sp.getId()));
+		}
+		return dtoList;
+	}
+
+	public List<SellerProductDTO> getProductsOfSeller(String name) {
+		Seller seller = sellerRepository.getSellerByUsername(name);
+
+		List<SellerProduct> sellerProducts = sellerProductRepository.findBySellerId(seller.getId());
+		List<SellerProductDTO> dtoList = new ArrayList<>();
+		for (SellerProduct sp : sellerProducts) {
+			Product p = sp.getProduct();
+			dtoList.add(new SellerProductDTO(p.getProductId(), p.getBrandName(), p.getProductName(), p.getImageUrl(),
+					sp.getPrice(), sp.getStockQuantity(), sp.getSeller().getName(), sp.getId()));
+		}
+
+		return dtoList;
 	}
 
 }

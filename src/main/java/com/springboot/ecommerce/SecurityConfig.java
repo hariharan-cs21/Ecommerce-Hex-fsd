@@ -48,6 +48,11 @@ public class SecurityConfig {
 						.requestMatchers("/api/address/delete/{id}", "/api/address/update/{id}").permitAll()
 						.requestMatchers("/api/product/add/{productId}", "/api/product/update/{sellerProductId}")
 						.hasAuthority("SELLER")
+						.requestMatchers("/api/seller-product/getProductsBySellerId/{sellerID}",
+								"/api/seller-product/update/{sellerProductId}", "/api/seller-product/add/{productId}",
+								"/api/seller-product/getProductsBySeller/{productId}",
+								"/api/seller-product/getProductsOfSeller")
+						.permitAll()
 						.requestMatchers("/api/seller-product/request/{categoryId}",
 								"/api/seller-product/requests/seller", "/api/seller-product/getStock/{sellerProductId}")
 						.permitAll()

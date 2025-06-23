@@ -17,4 +17,7 @@ public interface SellerProductRepository extends JpaRepository<SellerProduct, In
 	@Query("select sp.stockQuantity from SellerProduct sp where sp.id=?1")
 	int getStockBySellerProduct(int sellerProductId);
 
+	@Query("select sp from SellerProduct sp where sp.seller.id=?1 and sp.product.productId=?2")
+	List<SellerProduct> findBySellerIdandProductId(int sellerId, int productId);
+
 }

@@ -50,6 +50,17 @@ public class SellerProductController {
 		return sellerProductService.getSellerProducts(sellerID);
 	}
 
+	@GetMapping("/getProductsOfSeller")
+	public List<SellerProductDTO> getProductsOfSeller(Principal principal) {
+		return sellerProductService.getProductsOfSeller(principal.getName());
+	}
+
+	// get products of seller for particular product
+	@GetMapping("/getProductsBySeller/{productId}")
+	public List<SellerProductDTO> getProductsBySeller(Principal principal, @PathVariable int productId) {
+		return sellerProductService.getSellerProductsByLoggedIn(principal.getName(), productId);
+	}
+
 	@GetMapping("/getStock/{sellerProductId}")
 	public ResponseEntity<?> getStock(@PathVariable int sellerProductId) {
 		int stock = sellerProductService.getStock(sellerProductId);

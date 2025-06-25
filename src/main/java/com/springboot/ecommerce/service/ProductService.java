@@ -6,8 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,39 +60,30 @@ public class ProductService {
 			// Only include product if at least one SellerProduct has stock
 			List<SellerProduct> sellerProducts = sellerProductRepository.findByProductProductId(product.getProductId());
 
-			boolean available = sellerProducts.stream()
-					.anyMatch(sp -> sp.getStockQuantity() != null && sp.getStockQuantity() > 0);
+			ProductDTO dto = new ProductDTO(product.getProductId(), product.getBrandName(),
+					product.getProductName(), product.getImageUrl());
+			productDTOs.add(dto);
 
-			if (available) {
-				ProductDTO dto = new ProductDTO(product.getProductId(), product.getBrandName(),
-						product.getProductName(), product.getImageUrl());
-				productDTOs.add(dto);
-			}
 		}
 
 		return productDTOs;
 	}
 
-	public List<ProductDTO> getRandomProducts(int limit) {
-		List<Product> allProducts = productRepository.findAll();
-		Collections.shuffle(allProducts);
-
-		List<ProductDTO> randomProducts = new ArrayList<>();
-
+	public List<ProductDTO> getAllProducts(int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		List<ProductDTO> formatted = new ArrayList<>();
+		List<Product> allProducts = productRepository.findAll(pageable).getContent();
 		for (Product product : allProducts) {
 			ProductDTO dto = new ProductDTO(
 					product.getProductId(),
 					product.getBrandName(),
 					product.getProductName(),
 					product.getImageUrl());
-			randomProducts.add(dto);
+			formatted.add(dto);
 
-			if (randomProducts.size() >= limit) {
-				break;
-			}
 		}
 
-		return randomProducts;
+		return formatted;
 	}
 
 	public List<SellerProductDTO> getSellerProductsByProductId(int productId) {

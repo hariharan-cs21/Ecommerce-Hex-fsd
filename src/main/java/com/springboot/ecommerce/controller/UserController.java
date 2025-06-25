@@ -44,6 +44,11 @@ public class UserController {
 		}
 	}
 
+	@GetMapping("/getSellers")
+	public ResponseEntity<?> getSellers(Principal principal) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getAllSellers(principal.getName()));
+	}
+
 	@GetMapping("/details")
 	public Object getDetails(Principal principal) {
 		String username = principal.getName();

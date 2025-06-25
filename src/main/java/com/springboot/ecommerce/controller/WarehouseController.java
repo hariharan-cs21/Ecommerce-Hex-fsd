@@ -1,7 +1,7 @@
 package com.springboot.ecommerce.controller;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +35,19 @@ public class WarehouseController {
 	@PostMapping("/deliver")
 	public ResponseEntity<?> deliverItems(@RequestBody List<Integer> orderItemIds) {
 		warehouseService.markItemsAsDelivered(orderItemIds);
-		return ResponseEntity.status(HttpStatus.OK).body("Marked as delivered");
+		Map<String, String> map = new HashMap<>();
+		map.put("message", "Marked as delivered");
+		return ResponseEntity.status(HttpStatus.OK).body(map);
 	}
 
 	@GetMapping("/shipped")
 	public ResponseEntity<List<WarehouseDispatchDTO>> getShippedItems() {
 		return ResponseEntity.status(HttpStatus.OK).body(warehouseService.getShippedItems());
+	}
+
+	@GetMapping("/dispatched")
+	public ResponseEntity<List<WarehouseDispatchDTO>> getDispatchedItems() {
+		return ResponseEntity.status(HttpStatus.OK).body(warehouseService.getDispatchedItems());
 	}
 
 	@GetMapping("/dispatch-times/order/{orderId}")

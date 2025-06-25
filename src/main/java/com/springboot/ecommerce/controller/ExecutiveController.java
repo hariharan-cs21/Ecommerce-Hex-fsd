@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,13 +21,13 @@ import com.springboot.ecommerce.service.ProductRequestService;
 
 @RestController
 @RequestMapping("/api/executive")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ExecutiveController {
 
 	@Autowired
 	private ExecutiveService executiveService;
 	@Autowired
 	ProductRequestService productRequestService;
-	
 
 	@GetMapping("/get-one")
 	public Executive getSellerById(Principal principal) {
@@ -38,19 +39,18 @@ public class ExecutiveController {
 	public Executive insertSeller(@RequestBody Executive executive) {
 		return executiveService.insertExecutive(executive);
 	}
+
 	@GetMapping("/requests/pending")
 	public List<ProductRequest> getPendingRequests() {
-	    return productRequestService.getPendingProductRequests();
+		return productRequestService.getPendingProductRequests();
 	}
-	
-	//update the new product status by executive
+
+	// update the new product status by executive
 	@PutMapping("/requests/approve/{requestId}")
 	public Product approveProductRequest(
-	        @PathVariable int requestId,
-	        Principal principal) {
-	    return productRequestService.approveProductRequest(requestId, principal.getName());
+			@PathVariable int requestId,
+			Principal principal) {
+		return productRequestService.approveProductRequest(requestId, principal.getName());
 	}
-
-
 
 }

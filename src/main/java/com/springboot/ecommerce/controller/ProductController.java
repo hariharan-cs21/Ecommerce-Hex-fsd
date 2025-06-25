@@ -41,8 +41,12 @@ public class ProductController {
 	}
 
 	@GetMapping("/random")
-	public ResponseEntity<List<ProductDTO>> getRandomProducts(@RequestParam(defaultValue = "5") int count) {
-		return ResponseEntity.status(HttpStatus.OK).body(productService.getRandomProducts(count));
+	public ResponseEntity<List<ProductDTO>> getAllProducts(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		List<ProductDTO> prod = productService.getAllProducts(page, size);
+		return ResponseEntity.status(HttpStatus.OK).body(prod);
 	}
 
 	// get sellers for each product

@@ -79,7 +79,7 @@ public class WarehouseService {
 		boolean allDispatched = items.stream().allMatch(item -> item.getStatus() == OrderItemStatus.DISPATCHED);
 
 		if (!allDispatched) {
-			throw new RuntimeException("All order items must be in DISPATCHED status to mark as DELIVERED");
+			throw new RuntimeException("All order items must be DISPATCHED status to be DELIVERED");
 		}
 		for (OrderItem item : items) {
 			item.setStatus(OrderItemStatus.DELIVERED);
@@ -99,7 +99,7 @@ public class WarehouseService {
 				orderRepository.save(order);
 
 				// setting deliverytime for order based on all item delivered
-				Set<WarehouseDispatch> dispatches = orderItems.stream().map(OrderItem::getDispatch)
+				Set<WarehouseDispatch> dispatches = orderItems.stream().map(item -> item.getDispatch())
 						.filter(d -> d != null).collect(Collectors.toSet());
 				for (WarehouseDispatch dispatch : dispatches) {
 					if (dispatch.getDeliveredTime() == null) {
@@ -153,6 +153,28 @@ public class WarehouseService {
 		Map<String, LocalDateTime> result = new HashMap<>();
 		result.put("dispatchTime", dispatch.getDispatchTime());
 		result.put("deliveredTime", dispatch.getDeliveredTime());
+
+		return result;
+	}
+
+	public List<WarehouseDispatchDTO> getDispatchedItems() {
+		List<OrderItem> shippedItems = orderItemRepo.findByStatus(OrderItemStatus.DISPATCHED);
+		List<WarehouseDispatchDTO> result = new ArrayList<>();
+
+		for (OrderItem item : shippedItems) {
+			WarehouseDispatchDTO dto = new WarehouseDispatchDTO();
+			dto.setOrderId(item.getOrder().getId());
+			dto.setOrderItemId(item.getId());
+			dto.setProductName(item.getSellerProduct().getProduct().getProductName());
+			dto.setQuantity(item.getQuantity());
+
+			dto.setCustomerName(item.getOrder().getCustomer().getName());
+			dto.setContact(item.getOrder().getAddress().getContactNumber());
+			dto.setCity(item.getOrder().getAddress().getCity());
+			dto.setStreet(item.getOrder().getAddress().getStreet());
+
+			result.add(dto);
+		}
 
 		return result;
 	}

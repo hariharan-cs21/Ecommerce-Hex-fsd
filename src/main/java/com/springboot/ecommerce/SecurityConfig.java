@@ -57,13 +57,18 @@ public class SecurityConfig {
 								"/api/seller-product/requests/seller", "/api/seller-product/getStock/{sellerProductId}")
 						.permitAll()
 
-						.requestMatchers("/api/warehouse/shipped").authenticated()
+						.requestMatchers("/api/warehouse/shipped", "/api/warehouse/dispatch/{orderId}",
+								"/api/warehouse/deliver", "/api/warehouse/dispatched")
+						.permitAll()
 
-						.requestMatchers("/api/category/add").hasAuthority("EXECUTIVE")
-						.requestMatchers("/api/product/create/{categoryId}").permitAll()
+						.requestMatchers("/api/category/add", "/api/category/update/{categoryId}").permitAll()
+
 						.requestMatchers("/api/executive/requests/pending",
 								"/api/executive/requests/approve/{requestId}")
-						.hasAuthority("EXECUTIVE")
+						.permitAll()
+						.requestMatchers("/api/product/create/{categoryId}").permitAll()
+						.requestMatchers("/api/user/getSellers").permitAll()
+
 						.requestMatchers("/api/executive/register").permitAll()
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

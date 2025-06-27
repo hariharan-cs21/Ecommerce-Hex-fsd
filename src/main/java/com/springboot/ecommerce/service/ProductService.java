@@ -58,7 +58,8 @@ public class ProductService {
 
 		for (Product product : products) {
 			// Only include product if at least one SellerProduct has stock
-			List<SellerProduct> sellerProducts = sellerProductRepository.findByProductProductId(product.getProductId());
+			// List<SellerProduct> sellerProducts =
+			// sellerProductRepository.findByProductProductId(product.getProductId());
 
 			ProductDTO dto = new ProductDTO(product.getProductId(), product.getBrandName(),
 					product.getProductName(), product.getImageUrl());

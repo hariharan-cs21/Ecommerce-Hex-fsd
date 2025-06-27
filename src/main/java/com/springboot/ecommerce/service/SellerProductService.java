@@ -35,7 +35,7 @@ public class SellerProductService {
 
 		boolean exists = sellerProductRepository.existsBySellerIdAndProductProductId(seller.getId(), productId);
 		if (exists) {
-			throw new RuntimeException("Seller has already listed this product.");
+			throw new RuntimeException("Seller has already listed this product");
 		}
 
 		SellerProduct sellerProduct = new SellerProduct();

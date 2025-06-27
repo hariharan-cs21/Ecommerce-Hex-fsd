@@ -22,10 +22,12 @@ import com.springboot.ecommerce.repo.CustomerRepository;
 import com.springboot.ecommerce.repo.OrderItemRepository;
 import com.springboot.ecommerce.repo.OrderRepository;
 import com.springboot.ecommerce.repo.SellerProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class OrderService {
-
+	private Logger logger = LoggerFactory.getLogger(OrderService.class);
 	private final CartService cartService;
 	private final OrderRepository orderRepository;
 	private final OrderItemRepository orderItemRepository;
@@ -52,6 +54,8 @@ public class OrderService {
 
 	@Transactional
 	public Orders placeOrder(String username, int addressId) {
+		logger.info("Placing order for: {}", username);
+
 		Customer customer = customerRepository.getCustomerByUsername(username);
 
 		Address address = addressRepository.findById(addressId)
@@ -103,6 +107,7 @@ public class OrderService {
 	}
 
 	public void cancelOrderByCustomer(int orderId, String username) {
+		logger.info("Cancel order {} for user {}", orderId, username);
 		Orders order = orderRepository.findById(orderId)
 				.orElseThrow(() -> new RuntimeException("Order not found"));
 

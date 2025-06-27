@@ -2,7 +2,8 @@ package com.springboot.ecommerce.service;
 
 import java.util.List;
 import java.util.Optional;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.springboot.ecommerce.model.Cart;
@@ -18,6 +19,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class CartService {
+	private Logger logger = LoggerFactory.getLogger(CartService.class);
 
 	private final CartRepository cartRepository;
 	private final CartItemRepository cartItemRepository;
@@ -43,13 +45,17 @@ public class CartService {
 	}
 
 	public CartItem addToCart(String username, int sellerProductId, int quantity) {
+
 		Cart cart = getCartByCustomerUsername(username);
 		SellerProduct sp = sellerProductRepository.findById(sellerProductId)
 				.orElseThrow(() -> new RuntimeException("Product not found"));
 
 		List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
-		Optional<CartItem> existing = cartItems.stream().filter(item -> item.getSellerProduct().getId() == sellerProductId)
+		Optional<CartItem> existing = cartItems.stream()
+				.filter(item -> item.getSellerProduct().getId() == sellerProductId)
 				.findFirst();
+		logger.info("Adding Seller-Product Id {} with quantity {} to cart for user {}", sellerProductId, quantity,
+				username);
 
 		if (existing.isPresent()) {
 			CartItem item = existing.get();
@@ -68,9 +74,11 @@ public class CartService {
 		Cart cart = getCartByCustomerUsername(username);
 		return cartItemRepository.findByCartId(cart.getId());
 	}
+
 	@Transactional
 	public void clearCart(String username) {
 		Cart cart = getCartByCustomerUsername(username);
+		logger.warn("Clear cart for user: {}", username);
 		cartItemRepository.deleteByCartId(cart.getId());
 	}
 }
